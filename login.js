@@ -1,107 +1,89 @@
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const loginForm = document.getElementById("loginForm");
+const erroremail = document.getElementById("erroremail");
+const errorpassword = document.getElementById("errorpassword");
 
-let email = document.getElementById("email")
-let password = document.getElementById("password")
-let loginBtn = document.getElementById("loginBtn")
-
-let userList = []
-
-let erroremail = document.getElementById("erroremail")
-let errorpassword = document.getElementById("errorpassword")
-
-loginBtn.addEventListener("click", LoginInFunc)
-
-function getAllPreviousUser(){
-   var userObject = JSON.parse(localStorage.getItem("UserList"))
-   userList= userObject
+let userList = [];
+document.querySelectorAll("input").forEach(function(input){
+    input.setAttribute("autocomplete", "off")
+}
+)
+function getAllPreviousUser() {
+    try {
+        userList = JSON.parse(localStorage.getItem("UserList")) || [];
+    } catch (error) {
+        userList = [];
+    }
 }
 
-getAllPreviousUser()
-
-function LoginInFunc() {
-    let userCheck = false
-    let selectedIndex;
-    if (email.value != "" && password.value != "") {
-        for(var i=0;i<userList.length;i++){
-            console.log(userList[i].email)
-            if(email.value == userList[i].email){
-                selectedIndex = i
-                userCheck=true
-            }
-
-        }
-
-        if(userCheck==true){
-            if(password.value==userList[selectedIndex].password){
-                //  alert("user login")
-                 window.location.replace("dashboard.html")
-            }
-            else{
-                 alert("invalid data")
-            }
-           
-        }
-        else{
-            alert("user not found")
-        }
-    
-    }
-    else {
-        
-        if (email.value == "") {
-            erroremail.innerText = "Please fill email"
-
-            erroremail.setAttribute("class", "error")
-
-        }
-
-        if (password.value == "") {
-            errorpassword.innerText = "Please fill password"
-
-            errorpassword.setAttribute("class", "error")
-        }
-
-    }
-
-
+function setError(element, message) {
+    element.textContent = message;
 }
 
+function isValidEmail(emailValue) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue.trim());
+}
 
+function validateLoginForm() {
+    let isValid = true;
 
-email.addEventListener("input", function (e) {
-    if (email.value != "") {
-        erroremail.innerText = ""
-
-    }
-    else if (email.value == "") {
-        erroremail.innerText = "Please fill username"
-
-        erroremail.setAttribute("class", "error")
-
-    }
-
-})
-
-password.addEventListener("input", function (e) {
-    if (password.value != "") {
-        if (password.value.length < 8) {
-            errorpassword.innerText = "Password must be 8 letter long"
-
-            errorpassword.setAttribute("class", "error")
-
-        }
-        else {
-            errorpassword.innerText = ""
-        }
-
-
+    if (!isValidEmail(email.value)) {
+        setError(erroremail, "Please enter a valid email address.");
+        isValid = false;
+    } else {
+        setError(erroremail, "");
     }
 
-    else if (password.value == "") {
-        errorpassword.innerText = "Please fill username"
-
-        errorpassword.setAttribute("class", "error")
-
+    if (!password.value) {
+        setError(errorpassword, "Please enter your password.");
+        isValid = false;
+    } else {
+        setError(errorpassword, "");
     }
 
-})
+    return isValid;
+}
 
+function LoginInFunc(event) {
+    event.preventDefault();
+    getAllPreviousUser();
+
+    if (!validateLoginForm()) {
+        return;
+    }
+
+    const normalizedEmail = email.value.trim().toLowerCase();
+    const matchUser = userList.find((user) => user.email.toLowerCase() === normalizedEmail);
+
+    if (!matchUser) {
+        setError(erroremail, "User not found.");
+        return;
+    }
+
+    if (matchUser.password !== password.value) {
+        setError(errorpassword, "Incorrect password.");
+        return;
+    }
+
+    localStorage.setItem("currentuser", JSON.stringify([matchUser]));
+    window.location.replace("dashboard.html");
+}
+
+loginForm.addEventListener("submit", LoginInFunc);
+
+email.addEventListener("input", function () {
+    if (isValidEmail(email.value)) {
+        setError(erroremail, "");
+    }
+});
+
+password.addEventListener("input", function () {
+    if (password.value) {
+        setError(errorpassword, "");
+    }
+});
+
+getAllPreviousUser();
+email.focus();

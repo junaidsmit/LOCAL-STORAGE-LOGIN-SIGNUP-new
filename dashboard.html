@@ -1,11 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>Welcome</h1>
+
+<body class="dashboard-page">
+    <div class="page-shell">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <p class="eyebrow">Profile</p>
+                <h1>Welcome, <span id="name">User</span></h1>
+            </div>
+
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <span class="label">Email</span>
+                    <strong id="email">-</strong>
+                </div>
+
+                <div class="profile-item">
+                    <span class="label">Age</span>
+                    <strong id="age">-</strong>
+                </div>
+
+                <div class="profile-item">
+                    <span class="label">Country</span>
+                    <strong id="country">-</strong>
+                </div>
+
+                <div class="profile-item">
+                    <span class="label">Date of birth</span>
+                    <strong id="dob">-</strong>
+                </div>
+            </div>
+
+            <a href="login.html" class="secondary-btn">Logout</a>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
 </body>
+
 </html>
